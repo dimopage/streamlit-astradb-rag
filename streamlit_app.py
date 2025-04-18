@@ -3,7 +3,7 @@ from langchain_community.document_loaders import PyPDFLoader, TextLoader, Unstru
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_astradb import AstraDBVectorStore
-from astrapy import DataAPIClient
+import requests
 import os
 import tempfile
 from datetime import datetime
@@ -17,9 +17,35 @@ except KeyError as e:
     st.error(f"Missing secret key: {e}")
     st.stop()
 
-# Initialize AstraDB client
-client = DataAPIClient(token=ASTRA_DB_APPLICATION_TOKEN)
-database = client.get_database(ASTRA_DB_API_ENDPOINT)
+# Function to fetch namespaces via REST API
+def fetch_namespaces():
+    url = f"{ASTRA_DB_API_ENDPOINT}/api/rest/v2/keyspaces"
+    headers = {
+        "X-Cassandra-Token": ASTRA_DB_APPLICATION_TOKEN,
+        "Content-Type": "application/json"
+    }
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        return response.json().get("data", [])
+    except Exception as e:
+        st.error(f"Failed to fetch namespaces: {str(e)}")
+        return []
+
+# Function to fetch collections for a namespace via REST API
+def fetch_collections(namespace):
+    url = f"{ASTRA_DB_API_ENDPOINT}/api/rest/v2/namespaces/{namespace}/collections"
+    headers = {
+        "X-Cassandra-Token": ASTRA_DB_APPLICATION_TOKEN,
+        "Content-Type": "application/json"
+    }
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        return [item["name"] for item in response.json().get("data", [])]
+    except Exception as e:
+        st.error(f"Failed to fetch collections: {str(e)}")
+        return ["rag_default"]
 
 # Custom CSS for GenIAlab.Space-inspired modern UI
 st.markdown("""
@@ -172,25 +198,16 @@ st.title("DocVectorizer for RAG")
 # Main container
 with st.container():
     # Fetch namespaces
-    try:
-        namespaces = database.list_namespaces()
-        if not namespaces:
-            st.error("No namespaces found in the database.")
-            st.stop()
-    except Exception as e:
-        st.error(f"Failed to fetch namespaces: {str(e)}")
+    namespaces = fetch_namespaces()
+    if not namespaces:
+        st.error("No namespaces found in the database.")
         st.stop()
 
     # Namespace selection
     selected_namespace = st.selectbox("Select Namespace", namespaces, index=0)
 
     # Fetch collections for the selected namespace
-    try:
-        collections = database.get_namespace(selected_namespace).list_collections()
-        collections = collections if collections else ["rag_default"]
-    except Exception as e:
-        st.error(f"Failed to fetch collections: {str(e)}")
-        collections = ["rag_default"]
+    collections = fetch_collections(selected_namespace)
 
     # Two-column layout for collection and uploader
     col1, col2 = st.columns([1, 1], gap="medium")
