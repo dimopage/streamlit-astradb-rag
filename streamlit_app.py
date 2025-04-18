@@ -1,5 +1,5 @@
 import streamlit as st
-from langchain.document_loaders import PyPDFLoader, TextLoader
+from langchain.document_loaders import PyPDFLoader, TextLoader, UnstructuredJSONLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_ollama import OllamaEmbeddings
 from langchain_astradb import AstraDBVectorStore
@@ -20,8 +20,8 @@ st.title("Document Vectorizer for RAG with Ollama")
 use_case = st.text_input("Enter use case (e.g., technical, marketing)", value="default")
 collection_name = f"rag_{use_case.lower().replace(' ', '_')}"
 
-# File uploader
-uploaded_files = st.file_uploader("Upload Documents", type=["pdf", "txt", "md"], accept_multiple_files=True)
+# File uploader with JSON support
+uploaded_files = st.file_uploader("Upload Documents", type=["pdf", "txt", "md", "json"], accept_multiple_files=True)
 
 if uploaded_files:
     documents = []
@@ -37,6 +37,8 @@ if uploaded_files:
                 loader = PyPDFLoader(tmp_file_path)
             elif file.type in ["text/plain", "text/markdown"]:
                 loader = TextLoader(tmp_file_path)
+            elif file.type == "application/json":
+                loader = UnstructuredJSONLoader(tmp_file_path)
             else:
                 st.warning(f"Unsupported file type: {file.type}")
                 continue
