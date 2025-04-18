@@ -87,7 +87,7 @@ st.markdown("""
     }
 
     .stFileUploader > div > button:hover {
-        background-color: #333333;
+        background-color: #e5e7eb;
     }
 
     /* Feedback messages */
