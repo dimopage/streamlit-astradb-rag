@@ -16,7 +16,7 @@ except KeyError as e:
     st.error(f"Missing secret key: {e}")
     st.stop()
 
-# Custom CSS for GenIAlab.Space-inspired styling
+# Custom CSS for GenIAlab.Space-inspired modern UI
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
@@ -28,6 +28,9 @@ st.markdown("""
 
     .stApp {
         background-color: #FFFFFF;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
     }
 
     /* Logo text */
@@ -36,43 +39,52 @@ st.markdown("""
         font-size: 2rem;
         font-weight: 700;
         color: #000000;
-        margin: 20px 0;
+        margin: 30px 0 20px 0;
     }
 
     /* Title */
     h1 {
         text-align: center;
-        font-size: 3rem;
+        font-size: 3.5rem;
         font-weight: 700;
         color: #000000;
-        margin-bottom: 30px;
+        margin-bottom: 40px;
     }
 
     /* Input field */
     .stTextInput > div > div > input {
         border: 1px solid #E5E5E5;
-        border-radius: 12px;
-        padding: 10px;
+        border-radius: 8px;
+        padding: 12px;
         font-size: 1rem;
+        background-color: #FFFFFF;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: box-shadow 0.3s;
+    }
+
+    .stTextInput > div > div > input:focus {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-color: #000000;
     }
 
     /* File uploader */
     .stFileUploader > div > div > div {
         border: 1px solid #E5E5E5;
-        border-radius: 12px;
-        padding: 10px;
-        background-color: #F5F5F5;
+        border-radius: 8px;
+        padding: 12px;
+        background-color: #FFFFFF;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
     /* Upload button */
     .stFileUploader > div > button {
         background-color: #000000;
         color: #FFFFFF;
-        border-radius: 12px;
+        border-radius: 8px;
         padding: 10px 20px;
+        font-size: 1rem;
         font-weight: 700;
-        border: 1px solid #000000;
+        border: none;
         transition: background-color 0.3s;
     }
 
@@ -86,6 +98,7 @@ st.markdown("""
         color: #000000;
         border-radius: 8px;
         padding: 15px;
+        font-size: 1rem;
         animation: fadeIn 0.5s;
     }
 
@@ -97,8 +110,9 @@ st.markdown("""
     /* Footer */
     .footer {
         text-align: center;
-        margin-top: 40px;
+        margin-top: 50px;
         font-size: 0.9rem;
+        font-weight: 400;
         color: #000000;
     }
 
@@ -114,14 +128,26 @@ st.markdown("""
 
     /* Responsive design */
     @media (max-width: 768px) {
+        .stApp {
+            padding: 10px;
+        }
         h1 {
             font-size: 2.5rem;
         }
         .logo-text {
             font-size: 1.5rem;
+            margin: 20px 0;
         }
         .stTextInput > div > div > input,
         .stFileUploader > div > div > div {
+            font-size: 0.9rem;
+            padding: 10px;
+        }
+        .stFileUploader > div > button {
+            font-size: 0.9rem;
+            padding: 8px 16px;
+        }
+        .stSuccess, .stWarning, .stInfo {
             font-size: 0.9rem;
         }
     }
@@ -137,7 +163,7 @@ st.title("DocVectorizer for RAG")
 # Main container
 with st.container():
     # Two-column layout for input and uploader
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns([1, 1], gap="medium")
 
     with col1:
         # Input for use case
