@@ -1,7 +1,7 @@
 import streamlit as st
 from langchain_community.document_loaders import PyPDFLoader, TextLoader, UnstructuredFileLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_ollama import OllamaEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_astradb import AstraDBVectorStore
 import os
 import tempfile
@@ -11,7 +11,6 @@ from datetime import datetime
 ASTRA_DB_API_ENDPOINT = st.secrets["ASTRA_DB_API_ENDPOINT"]
 ASTRA_DB_APPLICATION_TOKEN = st.secrets["ASTRA_DB_APPLICATION_TOKEN"]
 ASTRA_DB_NAMESPACE = st.secrets.get("ASTRA_DB_NAMESPACE", None)
-OLLAMA_HOST = st.secrets["OLLAMA_HOST"]
 
 # Custom CSS for Inter font and GenIAlab-inspired styling
 st.markdown("""
@@ -105,8 +104,8 @@ if uploaded_files:
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=2500, chunk_overlap=250)
         chunks = text_splitter.split_documents(documents)
 
-        # Generate embeddings with Ollama
-        embeddings = OllamaEmbeddings(model="all-minilm:latest", base_url=OLLAMA_HOST)
+        # Generate embeddings with Hugging Face
+        embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
         # Create or access vector store
         vectorstore = AstraDBVectorStore(

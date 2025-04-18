@@ -1,8 +1,8 @@
 streamlit
 langchain
 langchain-astradb
-langchain-ollama
+langchain-huggingface
 langchain-community
 pypdf
 unstructured
-ollama
+sentence_transformers
