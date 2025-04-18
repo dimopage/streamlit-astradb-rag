@@ -7,10 +7,21 @@ import os
 import tempfile
 from datetime import datetime
 
-# Load settings from secrets.toml
-ASTRA_DB_API_ENDPOINT = st.secrets["ASTRA_DB_API_ENDPOINT"]
-ASTRA_DB_APPLICATION_TOKEN = st.secrets["ASTRA_DB_APPLICATION_TOKEN"]
-ASTRA_DB_NAMESPACE = st.secrets.get("ASTRA_DB_NAMESPACE", None)
+# Load settings from secrets.toml with error handling
+try:
+    ASTRA_DB_API_ENDPOINT = st.secrets["ASTRA_DB_API_ENDPOINT"]
+    ASTRA_DB_APPLICATION_TOKEN = st.secrets["ASTRA_DB_APPLICATION_TOKEN"]
+    ASTRA_DB_NAMESPACE = st.secrets.get("ASTRA_DB_NAMESPACE", None)
+except KeyError as e:
+    st.error(f"Missing secret key: {e}")
+    st.stop()
+
+# Debug: Print secrets to verify (remove in production)
+st.write("Secrets loaded:", {
+    "ASTRA_DB_API_ENDPOINT": ASTRA_DB_API_ENDPOINT,
+    "ASTRA_DB_APPLICATION_TOKEN": "****" if ASTRA_DB_APPLICATION_TOKEN else None,
+    "ASTRA_DB_NAMESPACE": ASTRA_DB_NAMESPACE
+})
 
 # Custom CSS for Inter font and GenIAlab-inspired styling
 st.markdown("""
@@ -105,16 +116,24 @@ if uploaded_files:
         chunks = text_splitter.split_documents(documents)
 
         # Generate embeddings with Hugging Face
-        embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        try:
+            embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        except Exception as e:
+            st.error(f"Failed to initialize HuggingFaceEmbeddings: {str(e)}")
+            st.stop()
 
-        # Create or access vector store
-        vectorstore = AstraDBVectorStore(
-            collection_name=collection_name,
-            embedding=embeddings,
-            api_endpoint=ASTRA_DB_API_ENDPOINT,
-            token=ASTRA_DB_APPLICATION_TOKEN,
-            namespace=ASTRA_DB_NAMESPACE
-        )
+        # Create or access vector store with detailed error handling
+        try:
+            vectorstore = AstraDBVectorStore(
+                collection_name=collection_name,
+                embedding=embeddings,
+                api_endpoint=ASTRA_DB_API_ENDPOINT,
+                token=ASTRA_DB_APPLICATION_TOKEN,
+                namespace=ASTRA_DB_NAMESPACE
+            )
+        except Exception as e:
+            st.error(f"Failed to initialize AstraDBVectorStore: {str(e)}")
+            st.stop()
 
         # Add documents to vector store with error handling
         try:
