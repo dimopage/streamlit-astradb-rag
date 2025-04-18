@@ -6,4 +6,3 @@ langchain-community
 pypdf
 unstructured
 sentence_transformers
-requests
