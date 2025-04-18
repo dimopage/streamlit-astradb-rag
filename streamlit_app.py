@@ -19,8 +19,6 @@ except KeyError as e:
 # Custom CSS for GenIAlab.Space-inspired modern UI
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
-
     html, body, [class*="css"] {
         font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
         color: #000000;
