@@ -13,8 +13,54 @@ ASTRA_DB_APPLICATION_TOKEN = st.secrets["ASTRA_DB_APPLICATION_TOKEN"]
 ASTRA_DB_NAMESPACE = st.secrets.get("ASTRA_DB_NAMESPACE", None)
 OLLAMA_HOST = st.secrets["OLLAMA_HOST"]
 
+# Custom CSS for Inter font and GenIAlab-inspired styling
+st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
+        color: #000000;
+    }
+    .stApp {
+        background-color: #ffffff;
+    }
+    .logo {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100px;
+    }
+    h1 {
+        text-align: center;
+        color: #000000;
+        font-weight: 700;
+        font-size: 2.5em;
+        margin-bottom: 0.5em;
+    }
+    .stTextInput > div > div > input {
+        border: 2px solid #000000;
+        border-radius: 8px;
+        padding: 8px;
+    }
+    .stButton > button {
+        background-color: #000000;
+        color: #ffffff;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 700;
+    }
+    .stButton > button:hover {
+        background-color: #333333;
+    }
+    .stFileUploader > div > div > div {
+        border: 2px solid #000000;
+        border-radius: 8px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 # App title
-st.title("Document Vectorizer for RAG with Ollama")
+st.title("GenIALab.Space Vectorizer")
 
 # Input for use case to dynamically set collection name
 use_case = st.text_input("Enter use case (e.g., technical, marketing)", value="default")

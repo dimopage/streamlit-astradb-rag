@@ -1,0 +1,7 @@
+# Streamlit theme configuration
+[theme]
+primaryColor = "#000000"  # Black for buttons and highlights
+backgroundColor = "#ffffff"  # White background
+secondaryBackgroundColor = "#000000"  # Black for secondary areas
+textColor = "#000000"  # Black text on white background
+font = "sans serif"  # Default sans-serif font (Inter applied via CSS)
