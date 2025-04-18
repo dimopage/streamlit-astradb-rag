@@ -22,7 +22,7 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
     html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif;
+        font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
         color: #000000;
     }
 
@@ -72,7 +72,7 @@ st.markdown("""
         border: 1px solid #E5E5E5;
         border-radius: 8px;
         padding: 12px;
-        background-color: #FFFFFF;
+        background-color: #e5e7eb;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
