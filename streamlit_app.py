@@ -156,7 +156,7 @@ st.title("DocVectorizer for RAG")
 
 # Main container
 with st.container():
-    # Hardcode use case
+    # Hardcode collection name
     collection_name = "rag_default"
 
     # File uploader
