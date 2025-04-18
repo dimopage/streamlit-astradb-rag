@@ -1,5 +1,5 @@
 import streamlit as st
-from langchain.document_loaders import PyPDFLoader, TextLoader, UnstructuredJSONLoader
+from langchain_community.document_loaders import PyPDFLoader, TextLoader, UnstructuredFileLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_ollama import OllamaEmbeddings
 from langchain_astradb import AstraDBVectorStore
@@ -60,7 +60,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # App title
-st.title("GenIALab.Space Vectorizer")
+st.title("DocVectorizer for RAG")
 
 # Input for use case to dynamically set collection name
 use_case = st.text_input("Enter use case (e.g., technical, marketing)", value="default")
@@ -84,7 +84,7 @@ if uploaded_files:
             elif file.type in ["text/plain", "text/markdown"]:
                 loader = TextLoader(tmp_file_path)
             elif file.type == "application/json":
-                loader = UnstructuredJSONLoader(tmp_file_path)
+                loader = UnstructuredFileLoader(tmp_file_path)
             else:
                 st.warning(f"Unsupported file type: {file.type}")
                 continue

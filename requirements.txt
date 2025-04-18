@@ -1,9 +1,8 @@
 streamlit
-ragstack-ai
-langchainhub
-ollama
-openai
-tiktoken
+langchain
+langchain-astradb
+langchain-ollama
+langchain-community
 pypdf
-pandas
 unstructured
+ollama
