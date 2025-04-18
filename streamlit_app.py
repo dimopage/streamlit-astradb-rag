@@ -6,6 +6,7 @@ from langchain_astradb import AstraDBVectorStore
 import os
 import tempfile
 from datetime import datetime
+import hashlib
 
 # Load settings from secrets.toml with error handling
 try:
@@ -16,12 +17,11 @@ except KeyError as e:
     st.error(f"Missing secret key: {e}")
     st.stop()
 
-# Custom CSS for GenIAlab.Space-inspired modern UI
+# Custom CSS for GenIAlab.Space-inspired modern UI with forced font
 st.markdown("""
     <style>
-    html, body, [class*="css"] {
-        font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-        color: #000000;
+    * {
+        font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
     }
 
     .stApp {
@@ -49,34 +49,19 @@ st.markdown("""
         margin-bottom: 40px;
     }
 
-    /* Input field */
-    .stTextInput > div > div > input {
-        border: 1px solid #E5E5E5;
-        border-radius: 8px;
-        padding: 12px;
-        font-size: 1rem;
-        background-color: #e5e7eb;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        transition: box-shadow 0.3s;
-    }
-
-    .stTextInput > div > div > input:focus {
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        border-color: #000000;
-    }
-
     /* File uploader */
     .stFileUploader > div > div > div {
         border: 1px solid #E5E5E5;
         border-radius: 8px;
         padding: 12px;
-        background-color: #e5e7eb;
+        background-color: #f2f3f5;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        color: #1f2937;
     }
 
     /* Upload button */
     .stFileUploader > div > button {
-        background-color: #000000;
+        background-color: #1f2937;
         color: #FFFFFF;
         border-radius: 8px;
         padding: 10px 20px;
@@ -87,7 +72,7 @@ st.markdown("""
     }
 
     .stFileUploader > div > button:hover {
-        background-color: #e5e7eb;
+        background-color: #374151;
     }
 
     /* Feedback messages */
@@ -98,6 +83,15 @@ st.markdown("""
         padding: 15px;
         font-size: 1rem;
         animation: fadeIn 0.5s;
+    }
+
+    /* Progress bar container */
+    .progress-container {
+        margin: 20px 0;
+        padding: 15px;
+        background-color: #f2f3f5;
+        border-radius: 8px;
+        color: #1f2937;
     }
 
     @keyframes fadeIn {
@@ -136,7 +130,6 @@ st.markdown("""
             font-size: 1.5rem;
             margin: 20px 0;
         }
-        .stTextInput > div > div > input,
         .stFileUploader > div > div > div {
             font-size: 0.9rem;
             padding: 10px;
@@ -146,6 +139,9 @@ st.markdown("""
             padding: 8px 16px;
         }
         .stSuccess, .stWarning, .stInfo {
+            font-size: 0.9rem;
+        }
+        .progress-container {
             font-size: 0.9rem;
         }
     }
@@ -160,22 +156,39 @@ st.title("DocVectorizer for RAG")
 
 # Main container
 with st.container():
-    # Two-column layout for input and uploader
-    col1, col2 = st.columns([1, 1], gap="medium")
+    # Hardcode use case
+    collection_name = "rag_default"
 
-    with col1:
-        # Input for use case
-        use_case = st.text_input("Enter use case (e.g., technical, marketing)", value="default")
-        collection_name = f"rag_{use_case.lower().replace(' ', '_')}"
+    # File uploader
+    uploaded_files = st.file_uploader("Upload Documents", type=["pdf", "txt", "md", "json"], accept_multiple_files=True)
 
-    with col2:
-        # File uploader with JSON support
-        uploaded_files = st.file_uploader("Upload Documents", type=["pdf", "txt", "md", "json"], accept_multiple_files=True)
+    # Track processed files to prevent duplicates
+    processed_files = set()
 
     # Process uploaded files
     if uploaded_files:
         documents = []
-        for file in uploaded_files:
+        progress_container = st.container()
+        progress_bar = progress_container.progress(0)
+        status_text = progress_container.empty()
+
+        # Function to compute file hash
+        def get_file_hash(file):
+            hasher = hashlib.sha256()
+            hasher.update(file.getvalue())
+            return hasher.hexdigest()
+
+        for i, file in enumerate(uploaded_files):
+            file_hash = get_file_hash(file)
+            if file_hash in processed_files:
+                status_text.warning(f"Skipping duplicate file: {file.name}")
+                continue
+
+            processed_files.add(file_hash)
+            status_text.text(f"Processing file {i+1}/{len(uploaded_files)}: {file.name}")
+            progress = (i + 0.5) / len(uploaded_files) * 0.5  # First 50% for file processing
+            progress_bar.progress(progress)
+
             # Save file temporarily
             with tempfile.NamedTemporaryFile(delete=False, suffix=file.name) as tmp_file:
                 tmp_file.write(file.getvalue())
@@ -190,7 +203,7 @@ with st.container():
                 elif file.type == "application/json":
                     loader = UnstructuredFileLoader(tmp_file_path)
                 else:
-                    st.warning(f"Unsupported file type: {file.type}")
+                    status_text.warning(f"Unsupported file type: {file.type}")
                     continue
                 docs = loader.load()
                 # Add metadata to each document
@@ -198,22 +211,27 @@ with st.container():
                     doc.metadata.update({
                         "filename": file.name,
                         "upload_date": datetime.now().isoformat(),
-                        "file_type": file.type
+                        "file_type": file.type,
+                        "file_hash": file_hash
                     })
                 documents.extend(docs)
+            except Exception as e:
+                status_text.error(f"Error processing {file.name}: {str(e)}")
             finally:
                 os.unlink(tmp_file_path)  # Delete temporary file
 
         if documents:
+            status_text.text("Splitting documents and generating embeddings...")
             # Split documents into chunks
             text_splitter = RecursiveCharacterTextSplitter(chunk_size=2500, chunk_overlap=250)
             chunks = text_splitter.split_documents(documents)
+            progress_bar.progress(0.6)  # 60% after splitting
 
             # Generate embeddings with Hugging Face
             try:
                 embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
             except Exception as e:
-                st.error(f"Failed to initialize HuggingFaceEmbeddings: {str(e)}")
+                status_text.error(f"Failed to initialize HuggingFaceEmbeddings: {str(e)}")
                 st.stop()
 
             # Create or access vector store with error handling
@@ -226,17 +244,19 @@ with st.container():
                     namespace=ASTRA_DB_NAMESPACE
                 )
             except Exception as e:
-                st.error(f"Failed to initialize AstraDBVectorStore: {str(e)}")
+                status_text.error(f"Failed to initialize AstraDBVectorStore: {str(e)}")
                 st.stop()
 
             # Add documents to vector store with error handling
             try:
+                status_text.text("Vectorizing documents...")
                 vectorstore.add_documents(chunks)
-                st.success(f"Documents successfully vectorized and stored in collection {collection_name}")
+                progress_bar.progress(1.0)  # 100% when done
+                status_text.success(f"Documents successfully vectorized and stored in collection {collection_name}")
             except Exception as e:
-                st.error(f"Failed to store documents in AstraDB: {str(e)}")
+                status_text.error(f"Failed to store documents in AstraDB: {str(e)}")
         else:
-            st.warning("No documents were processed")
+            status_text.warning("No documents were processed")
     else:
         st.info("Please upload documents to proceed")
 
