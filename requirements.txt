@@ -1,6 +1,5 @@
 streamlit==1.39.0
-langchain==0.2.16
-langchain-astradb==0.4.0
-langchain-ollama==0.2.0
+ragstack-ai==0.12.0
+langchain-ollama==0.1.1
 pypdf==5.0.1
 unstructured==0.15.13
