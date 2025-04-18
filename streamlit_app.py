@@ -3,18 +3,23 @@ from langchain_community.document_loaders import PyPDFLoader, TextLoader, Unstru
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_astradb import AstraDBVectorStore
+from astrapy import DataAPIClient
 import os
 import tempfile
 from datetime import datetime
+import hashlib
 
 # Load settings from secrets.toml with error handling
 try:
     ASTRA_DB_API_ENDPOINT = st.secrets["ASTRA_DB_API_ENDPOINT"]
     ASTRA_DB_APPLICATION_TOKEN = st.secrets["ASTRA_DB_APPLICATION_TOKEN"]
-    ASTRA_DB_NAMESPACE = st.secrets.get("ASTRA_DB_NAMESPACE", None)
 except KeyError as e:
     st.error(f"Missing secret key: {e}")
     st.stop()
+
+# Initialize AstraDB client
+client = DataAPIClient(token=ASTRA_DB_APPLICATION_TOKEN)
+database = client.get_database(ASTRA_DB_API_ENDPOINT)
 
 # Custom CSS for GenIAlab.Space-inspired modern UI
 st.markdown("""
@@ -22,7 +27,7 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
     html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif;
+        font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
         color: #000000;
     }
 
@@ -51,7 +56,8 @@ st.markdown("""
         margin-bottom: 40px;
     }
 
-    /* Input field */
+    /* Selectbox and Input field */
+    .stSelectbox > div > div > select,
     .stTextInput > div > div > input {
         border: 1px solid #E5E5E5;
         border-radius: 8px;
@@ -62,6 +68,7 @@ st.markdown("""
         transition: box-shadow 0.3s;
     }
 
+    .stSelectbox > div > div > select:focus,
     .stTextInput > div > div > input:focus {
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         border-color: #000000;
@@ -74,6 +81,7 @@ st.markdown("""
         padding: 12px;
         background-color: #FFFFFF;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        color: #000000;
     }
 
     /* Upload button */
@@ -93,7 +101,7 @@ st.markdown("""
     }
 
     /* Feedback messages */
-    .stSuccess, .stWarning, .stInfo {
+    .stSuccess, .stWarning, .stInfo, .stError {
         background-color: #F5F5F5;
         color: #000000;
         border-radius: 8px;
@@ -138,6 +146,7 @@ st.markdown("""
             font-size: 1.5rem;
             margin: 20px 0;
         }
+        .stSelectbox > div > div > select,
         .stTextInput > div > div > input,
         .stFileUploader > div > div > div {
             font-size: 0.9rem;
@@ -147,7 +156,7 @@ st.markdown("""
             font-size: 0.9rem;
             padding: 8px 16px;
         }
-        .stSuccess, .stWarning, .stInfo {
+        .stSuccess, .stWarning, .stInfo, .stError {
             font-size: 0.9rem;
         }
     }
@@ -162,25 +171,72 @@ st.title("DocVectorizer for RAG")
 
 # Main container
 with st.container():
-    # Two-column layout for input and uploader
+    # Fetch namespaces
+    try:
+        namespaces = database.list_namespaces()
+        if not namespaces:
+            st.error("No namespaces found in the database.")
+            st.stop()
+    except Exception as e:
+        st.error(f"Failed to fetch namespaces: {str(e)}")
+        st.stop()
+
+    # Namespace selection
+    selected_namespace = st.selectbox("Select Namespace", namespaces, index=0)
+
+    # Fetch collections for the selected namespace
+    try:
+        collections = database.get_namespace(selected_namespace).list_collections()
+        collections = collections if collections else ["rag_default"]
+    except Exception as e:
+        st.error(f"Failed to fetch collections: {str(e)}")
+        collections = ["rag_default"]
+
+    # Two-column layout for collection and uploader
     col1, col2 = st.columns([1, 1], gap="medium")
 
     with col1:
-        # Input for use case
-        use_case = st.text_input("Enter use case (e.g., technical, marketing)", value="default")
-        collection_name = f"rag_{use_case.lower().replace(' ', '_')}"
+        # Collection selection
+        selected_collection = st.selectbox("Select or Enter Collection", collections + ["New Collection"], index=0)
+        if selected_collection == "New Collection":
+            collection_name = st.text_input("Enter new collection name", value="rag_default")
+        else:
+            collection_name = selected_collection
 
     with col2:
         # File uploader with JSON support
         uploaded_files = st.file_uploader("Upload Documents", type=["pdf", "txt", "md", "json"], accept_multiple_files=True)
 
+    # Initialize metadata collection for tracking uploaded files
+    try:
+        metadata_store = AstraDBVectorStore(
+            collection_name="file_metadata",
+            embedding=None,  # No embeddings needed for metadata
+            api_endpoint=ASTRA_DB_API_ENDPOINT,
+            token=ASTRA_DB_APPLICATION_TOKEN,
+            namespace=selected_namespace
+        )
+    except Exception as e:
+        st.error(f"Failed to initialize metadata store: {str(e)}")
+        st.stop()
+
     # Process uploaded files
     if uploaded_files:
         documents = []
         for file in uploaded_files:
+            # Calculate file hash
+            file_content = file.getvalue()
+            file_hash = hashlib.sha256(file_content).hexdigest()
+
+            # Check if file is duplicate
+            existing_files = metadata_store._collection.find({"filename": file.name, "file_hash": file_hash})
+            if existing_files.count() > 0:
+                st.warning(f"File '{file.name}' is a duplicate and will not be uploaded.")
+                continue
+
             # Save file temporarily
             with tempfile.NamedTemporaryFile(delete=False, suffix=file.name) as tmp_file:
-                tmp_file.write(file.getvalue())
+                tmp_file.write(file_content)
                 tmp_file_path = tmp_file.name
 
             # Load document based on file type
@@ -200,9 +256,18 @@ with st.container():
                     doc.metadata.update({
                         "filename": file.name,
                         "upload_date": datetime.now().isoformat(),
-                        "file_type": file.type
+                        "file_type": file.type,
+                        "file_hash": file_hash
                     })
                 documents.extend(docs)
+
+                # Store file metadata
+                metadata_store._collection.insert_one({
+                    "filename": file.name,
+                    "file_hash": file_hash,
+                    "upload_date": datetime.now().isoformat(),
+                    "collection_name": collection_name
+                })
             finally:
                 os.unlink(tmp_file_path)  # Delete temporary file
 
@@ -225,7 +290,7 @@ with st.container():
                     embedding=embeddings,
                     api_endpoint=ASTRA_DB_API_ENDPOINT,
                     token=ASTRA_DB_APPLICATION_TOKEN,
-                    namespace=ASTRA_DB_NAMESPACE
+                    namespace=selected_namespace
                 )
             except Exception as e:
                 st.error(f"Failed to initialize AstraDBVectorStore: {str(e)}")
@@ -238,7 +303,7 @@ with st.container():
             except Exception as e:
                 st.error(f"Failed to store documents in AstraDB: {str(e)}")
         else:
-            st.warning("No documents were processed")
+            st.warning("No new documents were processed")
     else:
         st.info("Please upload documents to proceed")
 
