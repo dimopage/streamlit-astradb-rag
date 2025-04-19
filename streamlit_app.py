@@ -64,18 +64,18 @@ p, li, span, label {
 
 /* File Uploader */
 .stFileUploader > div > div > div {
-    background-color: #f2f2f2 !ّImportant;
-    border: 2px dashed #CBD5E1;
+    background-color: #E0F2FE !important;
+    border: 2px dashed #3B82F6 !important;
     border-radius: 12px;
     padding: 2rem;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(242, 242, 242,0.05);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .stFileUploader > div > div > div:hover {
-    background-color: #F8FAFC;
-    border-color: #94A3B8;
-    box-shadow: 0 4px 8px rgba(242, 242, 242,0.1);
+    background-color: #DBEAFE !important;
+    border-color: #2563EB !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .stFileUploader > div > button {
