@@ -1,7 +1,7 @@
 # Streamlit theme configuration
 [theme]
-backgroundColor = "#F8FAFC"
-secondaryBackgroundColor = "#000000"
-textColor = "#000000"
+backgroundColor="#F8FAFC"
+secondaryBackgroundColor="#000000"
+textColor="#000000"
 base="light"
 primaryColor="#f2f2f2"
