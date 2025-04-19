@@ -25,7 +25,7 @@ st.markdown("""
 
 
 # Header
-st.markdown('<div">GenIAlab.Space</div>', unsafe_allow_html=True)
+st.markdown('<div>GenIAlab.Space</div>', unsafe_allow_html=True)
 st.title("DocVectorizer for RAG")
 
 # Upload section
