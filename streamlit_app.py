@@ -20,98 +20,59 @@ except KeyError as e:
 # Inject custom CSS for clean design
 st.markdown("""
     <style>
-    :root {
-        --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        --font-size-base: 16px;
-        --font-size-sm: 14px;
-        --font-size-lg: 18px;
-        --font-size-xl: 24px;
-        --text-color: #1F1F1F;
-        --bg-color: #FFFFFF;
-        --primary-color: #000000;
-        --border-color: #E0E0E0;
-        --radius: 10px;
-    }
-
     html, body, [class*="css"] {
-        font-family: var(--font-sans);
-        font-size: var(--font-size-base);
-        background-color: var(--bg-color);
-        color: var(--text-color);
-        line-height: 1.6;
+        font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+        background-color: #FFFFFF;
+        color: #000000;
     }
 
     .stApp {
-        max-width: 860px;
+        max-width: 850px;
         margin: auto;
-        padding: 2.5rem 1rem;
-    }
-
-    h1, h2, h3 {
-        font-weight: 700;
-        margin-bottom: 0.5em;
-    }
-
-    .stTitle {
-        font-size: var(--font-size-xl);
-    }
-
-    .stSubheader {
-        font-size: var(--font-size-lg);
-        font-weight: 600;
-        color: var(--text-color);
+        padding: 2rem;
     }
 
     .stFileUploader > div > div > div {
-        background-color: #F9FAFB;
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius);
-        padding: 16px;
-        color: var(--text-color);
+        background-color: #f2f3f5 !important;
+        border: 1px solid #ccc;
+        border-radius: 12px;
+        padding: 14px;
+        color: #000000;
     }
 
     .stFileUploader > div > button {
-        background-color: var(--primary-color) !important;
+        background-color: #000000 !important;
         color: #FFFFFF !important;
         border-radius: 8px;
-        padding: 10px 16px;
         font-weight: 600;
-        font-size: var(--font-size-sm);
     }
 
     .stAlert, .stSuccess, .stWarning, .stInfo {
-        background-color: #F1F5F9 !important;
-        color: var(--text-color) !important;
-        border-radius: var(--radius);
-        font-size: var(--font-size-sm);
-        padding: 12px;
+        background-color: #e3e6e8 !important;
+        color: #000000 !important;
+        border-radius: 8px;
+        font-size: 0.95rem;
     }
 
     ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background-color: #CBD5E1;
-        border-radius: 6px;
+        display: none;
     }
 
     .footer {
         margin-top: 4rem;
         text-align: center;
-        font-size: var(--font-size-sm);
-        color: #6B7280;
+        font-size: 0.9rem;
+        color: #000;
     }
 
     .footer a {
-        color: var(--text-color);
+        color: #000000;
         text-decoration: none;
         font-weight: 600;
     }
 
     .footer a:hover {
-        color: #333;
+        color: #333333;
     }
     </style>
 """, unsafe_allow_html=True)
