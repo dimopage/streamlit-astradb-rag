@@ -17,7 +17,6 @@ except KeyError as e:
     st.error(f"Missing secret key: {e}")
     st.stop()
 
-# Inject custom CSS with exact Tailwind styling pattern
 st.markdown("""
     <style>
     </style>
