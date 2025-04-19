@@ -69,13 +69,13 @@ p, li, span, label {
     border-radius: 12px;
     padding: 2rem;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(242, 242, 242,0.05);
 }
 
 .stFileUploader > div > div > div:hover {
     background-color: #F8FAFC;
     border-color: #94A3B8;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(242, 242, 242,0.1);
 }
 
 .stFileUploader > div > button {
@@ -93,7 +93,7 @@ p, li, span, label {
 .stFileUploader > div > button:hover {
     background-color: #1F2937 !important;
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 6px 12px rgba(242, 242, 242,0.2);
 }
 
 .stFileUploader > div > button:active {
@@ -108,7 +108,7 @@ p, li, span, label {
     border-radius: 12px;
     padding: 1.5rem;
     border: 1px solid #E2E8F0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 12px rgba(242, 242, 242,0.05);
     margin: 1.75rem 0;
     font-size: 1.1rem;
 }
@@ -192,12 +192,12 @@ p, li, span, label {
 
 .stSelectbox > div > div:hover, .stTextInput > div > div:hover {
     border-color: #94A3B8;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(242, 242, 242,0.05);
 }
 
 .stSelectbox > div > div:focus-within, .stTextInput > div > div:focus-within {
     border-color: #000000;
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+    box-shadow: 0 0 0 3px rgba(242, 242, 242,0.1);
 }
 
 /* Responsive Design */
