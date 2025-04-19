@@ -64,7 +64,7 @@ p, li, span, label {
 
 /* File Uploader */
 .stFileUploader > div > div > div {
-    background-color: #f2f2f2;
+    background-color: #f2f2f2 !ّImportant;
     border: 2px dashed #CBD5E1;
     border-radius: 12px;
     padding: 2rem;
