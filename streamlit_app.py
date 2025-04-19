@@ -49,18 +49,20 @@ st.markdown("""
         margin-bottom: 40px;
     }
 
-    /* File uploader container */
+    /* File uploader container (outer box) */
     div[data-testid="stFileUploader"] {
-        background-color: #f2f3f5 !important;
+        background-color: #FFFFFF !important;
         border: 1px solid #E5E5E5 !important;
         border-radius: 8px !important;
         padding: 12px !important;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
     }
 
-    /* File uploader drop area */
+    /* File uploader drop area (inner box) */
     div[data-testid="stFileUploaderDropzone"] {
         background-color: #f2f3f5 !important;
+        border: none !important;
+        border-radius: 8px !important;
         color: #1f2937 !important;
     }
 
