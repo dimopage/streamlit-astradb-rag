@@ -199,7 +199,7 @@ uploaded_files = st.file_uploader("", type=["pdf", "txt", "md", "json"], accept_
 
 # Define vectorstore collection
 use_case = "default"
-collection_name = f"rag_{use_case.lower().replace(' ', '_')}"
+collection_name = f"{use_case.lower().replace(' ', '_')}"
 
 if uploaded_files:
     documents = []
