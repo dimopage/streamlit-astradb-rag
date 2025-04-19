@@ -8,7 +8,7 @@ import tempfile
 from datetime import datetime
 import hashlib
 
-# Load settings from secrets.toml
+# Load secrets
 try:
     ASTRA_DB_API_ENDPOINT = st.secrets["ASTRA_DB_API_ENDPOINT"]
     ASTRA_DB_APPLICATION_TOKEN = st.secrets["ASTRA_DB_APPLICATION_TOKEN"]
@@ -17,97 +17,111 @@ except KeyError as e:
     st.error(f"Missing secret key: {e}")
     st.stop()
 
-# Force font and style for UI
+# Custom CSS for clean modern layout
 st.markdown("""
     <style>
-    html, body, body * {
+    html, body, [class*="css"] {
         font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
         color: #000000 !important;
+        background-color: #FFFFFF;
     }
 
     .stApp {
-        background-color: #FFFFFF;
         max-width: 800px;
         margin: 0 auto;
         padding: 20px;
     }
 
-    div[data-testid="stFileUploader"] {
+    .stFileUploader > div > div > div {
         background-color: #f2f3f5 !important;
-        border: 1px solid #E5E5E5 !important;
-        border-radius: 10px !important;
-        padding: 16px !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 12px;
+        color: #000000;
     }
 
-    div[data-testid="stFileUploader"] button {
-        background-color: #000 !important;
-        color: #fff !important;
-        border-radius: 8px !important;
-        padding: 10px 20px !important;
-        border: none !important;
-        font-weight: 600 !important;
-        transition: 0.3s ease;
+    .stFileUploader > div > button {
+        background-color: #000000 !important;
+        color: #FFFFFF !important;
+        border-radius: 8px;
+        font-weight: 700;
     }
 
-    div[data-testid="stFileUploader"] button:hover {
-        background-color: #e5e7eb !important;
-        color: #000 !important;
+    .stAlert, .stSuccess, .stWarning, .stInfo {
+        background-color: #E3E6E8 !important;
+        color: #000000 !important;
+        border-radius: 10px;
+        font-size: 1rem;
+    }
+
+    .footer {
+        text-align: center;
+        margin-top: 50px;
+        font-size: 0.9rem;
+        font-weight: 400;
+        color: #000000;
+    }
+
+    .footer a {
+        color: #000000;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .footer a:hover {
+        color: #333333;
+    }
+
+    ::-webkit-scrollbar {
+        display: none;
     }
     </style>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-# Logo text
-st.markdown('<div style="text-align:center; font-size:2rem; font-weight:700; margin:30px 0 20px;">GenIAlab.Space</div>', unsafe_allow_html=True)
-
-# Title
+# Logo and title
+st.markdown('<div class="logo-text" style="text-align:center;font-size:2rem;font-weight:700;margin:30px 0 10px">GenIAlab.Space</div>', unsafe_allow_html=True)
 st.title("DocVectorizer for RAG")
 
-# File uploader
-uploaded_files = st.file_uploader("Upload Documents", type=["pdf", "txt", "md", "json"], accept_multiple_files=True)
+# Upload section
+st.subheader("Upload Documents")
+uploaded_files = st.file_uploader("", type=["pdf", "txt", "md", "json"], accept_multiple_files=True)
 
-# Hardcoded collection name
-collection_name = "rag_default"
+# Use case hardcoded
+use_case = "default"
+collection_name = f"rag_{use_case.lower().replace(' ', '_')}"
 
-# Helper to compute SHA256 hash from file bytes
-def compute_file_hash(file_bytes):
-    return hashlib.sha256(file_bytes).hexdigest()
-
-# Process files if uploaded
+# Process uploaded files
 if uploaded_files:
     documents = []
-    file_hashes = []
-    progress_bar = st.progress(0, text="Checking and processing files...")
+    skipped_files = []
+    total_files = len(uploaded_files)
 
-    for i, file in enumerate(uploaded_files):
-        file_bytes = file.getvalue()
-        file_hash = compute_file_hash(file_bytes)
+    progress = st.progress(0, text="Processing files...")
 
-        # Check if file hash already exists in AstraDB collection
+    for idx, file in enumerate(uploaded_files):
+        # Create a unique hash for the file
+        file_hash = hashlib.sha256(file.getvalue()).hexdigest()
+
         try:
-            embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+            with tempfile.NamedTemporaryFile(delete=False, suffix=file.name) as tmp_file:
+                tmp_file.write(file.getvalue())
+                tmp_file_path = tmp_file.name
+
+            # Check for duplicates in collection
             vectorstore = AstraDBVectorStore(
                 collection_name=collection_name,
-                embedding=embeddings,
+                embedding=HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2"),
                 api_endpoint=ASTRA_DB_API_ENDPOINT,
                 token=ASTRA_DB_APPLICATION_TOKEN,
                 namespace=ASTRA_DB_NAMESPACE
             )
-            existing = vectorstore.similarity_search(query="", k=100, filter={"file_hash": file_hash})
+
+            existing = vectorstore.similarity_search(file_hash, k=1)
             if existing:
-                st.warning(f"File '{file.name}' was already vectorized. Skipping.")
-                progress_bar.progress((i + 1) / len(uploaded_files))
+                skipped_files.append(file.name)
                 continue
-        except Exception as e:
-            st.error(f"Failed to check for duplicates: {str(e)}")
-            continue
 
-        # Save file temporarily
-        with tempfile.NamedTemporaryFile(delete=False, suffix=file.name) as tmp_file:
-            tmp_file.write(file_bytes)
-            tmp_file_path = tmp_file.name
-
-        try:
+            # Choose loader
             if file.type == "application/pdf":
                 loader = PyPDFLoader(tmp_file_path)
             elif file.type in ["text/plain", "text/markdown"]:
@@ -124,30 +138,32 @@ if uploaded_files:
                     "filename": file.name,
                     "upload_date": datetime.now().isoformat(),
                     "file_type": file.type,
-                    "file_hash": file_hash
+                    "hash": file_hash
                 })
             documents.extend(docs)
-            file_hashes.append(file_hash)
-
         except Exception as e:
-            st.error(f"Error processing file '{file.name}': {str(e)}")
+            st.error(f"Error processing file {file.name}: {e}")
         finally:
             os.unlink(tmp_file_path)
 
-        progress_bar.progress((i + 1) / len(uploaded_files))
+        progress.progress((idx + 1) / total_files, text=f"Processed {idx + 1} of {total_files} files")
 
     if documents:
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=2500, chunk_overlap=250)
+        chunks = text_splitter.split_documents(documents)
+
         try:
-            splitter = RecursiveCharacterTextSplitter(chunk_size=2500, chunk_overlap=250)
-            chunks = splitter.split_documents(documents)
             vectorstore.add_documents(chunks)
-            st.success(f"Successfully vectorized and stored documents in collection '{collection_name}'")
+            st.success(f"Successfully vectorized and stored {len(chunks)} chunks into collection '{collection_name}'")
         except Exception as e:
-            st.error(f"Error storing documents in AstraDB: {str(e)}")
-    else:
-        st.warning("No documents were processed.")
+            st.error(f"Failed to store documents in AstraDB: {str(e)}")
+
+    if skipped_files:
+        st.warning(f"{', '.join(skipped_files)} was already vectorized. Skipping.")
+    elif not documents:
+        st.info("No documents were processed.")
 else:
     st.info("Please upload documents to proceed.")
 
 # Footer
-st.markdown('<div style="text-align:center; margin-top:50px; font-size:0.9rem; font-weight:400;">Powered by <a href="https://genialab.space/" target="_blank">GenIAlab.Space</a></div>', unsafe_allow_html=True)
+st.markdown('<div class="footer">Powered by <a href="https://genialab.space/" target="_blank">GenIAlab.Space</a></div>', unsafe_allow_html=True)
