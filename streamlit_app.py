@@ -17,47 +17,82 @@ except KeyError as e:
     st.error(f"Missing secret key: {e}")
     st.stop()
 
-# Inject custom CSS for clean design
+# Inject custom CSS with exact Tailwind styling pattern
 st.markdown("""
     <style>
     html, body, [class*="css"] {
-        font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
         background-color: #FFFFFF;
-        color: #111827; /* text-gray-900 equivalent */
+        color: #111827;
     }
 
     .stApp {
-        max-width: 1280px; /* max-w-7xl equivalent */
-        margin: auto;
-        padding: 1.5rem; /* p-6 equivalent */
+        max-width: 80rem; /* max-w-7xl */
+        margin-left: auto;
+        margin-right: auto;
+        padding: 1.5rem;
     }
 
     .stFileUploader > div > div > div {
-        background-color: #F9FAFB !important; /* bg-gray-50 equivalent */
-        border: 1px solid #E5E7EB; /* border-gray-200 equivalent */
-        border-radius: 1rem; /* rounded-2xl equivalent */
+        background-color: #F9FAFB !important; /* bg-gray-50 */
+        border: 1px solid #E5E7EB;
+        border-radius: 1rem; /* rounded-2xl */
         padding: 1rem;
-        color: #111827; /* text-gray-900 equivalent */
     }
 
     .stFileUploader > div > button {
         background-color: #000000 !important;
         color: #FFFFFF !important;
-        border-radius: 9999px; /* rounded-full equivalent */
+        border-radius: 9999px; /* rounded-full */
         font-weight: 600;
-        transition: all 0.2s ease;
+        padding: 0.5rem 1rem;
+        transition-property: all;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
     }
     
     .stFileUploader > div > button:hover {
         transform: scale(1.05);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md equivalent */
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    h1 {
+        font-size: 2.25rem; /* text-4xl */
+        font-weight: 700;
+        line-height: 2.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    h3, .stSubheader {
+        font-size: 1.5rem; /* text-2xl */
+        font-weight: 600;
+        line-height: 2rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    p, .stInfo, div {
+        font-size: 0.875rem; /* text-sm */
+        line-height: 1.25rem;
     }
 
     .stAlert, .stSuccess, .stWarning, .stInfo {
-        background-color: #F9FAFB !important; /* bg-gray-50 equivalent */
-        color: #111827 !important; /* text-gray-900 equivalent */
-        border-radius: 1rem; /* rounded-2xl equivalent */
-        font-size: 0.875rem; /* text-sm equivalent */
+        background-color: #F9FAFB !important; /* bg-gray-50 */
+        color: #111827 !important;
+        border-radius: 1rem; /* rounded-2xl */
+        padding: 1rem;
+        border: 1px solid #E5E7EB;
+    }
+
+    .stProgress > div > div {
+        background-color: #000000 !important;
+        border-radius: 9999px; /* rounded-full */
+    }
+    
+    .stProgress {
+        height: 0.5rem !important;
     }
 
     ::-webkit-scrollbar {
@@ -65,35 +100,32 @@ st.markdown("""
     }
 
     .footer {
-        margin-top: 6rem; /* mt-24 equivalent */
+        margin-top: 6rem;
         text-align: center;
-        font-size: 0.875rem; /* text-sm equivalent */
-        color: #4B5563; /* text-gray-600 equivalent */
+        font-size: 0.875rem; /* text-sm */
+        color: #6B7280; /* text-gray-500 */
+        padding-bottom: 2rem;
     }
 
     .footer a {
         color: #000000;
         text-decoration: none;
         font-weight: 600;
-        transition: color 0.2s ease;
+        transition-property: color;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
     }
 
     .footer a:hover {
-        color: #4B5563; /* text-gray-600 equivalent */
+        color: #4B5563; /* text-gray-600 */
     }
     
-    /* Adding styles for headings */
-    h1 {
-        font-size: 1.875rem; /* text-3xl equivalent */
+    /* Header styling */
+    .stTitle {
+        font-size: 1.875rem; /* text-3xl */
         font-weight: 700;
-        margin-bottom: 1.5rem;
-    }
-    
-    h2, .stSubheader {
-        font-size: 1.5rem; /* text-2xl equivalent */
-        font-weight: 600;
-        margin-top: 1.5rem;
         margin-bottom: 1rem;
+        text-align: center;
     }
     </style>
 """, unsafe_allow_html=True)
