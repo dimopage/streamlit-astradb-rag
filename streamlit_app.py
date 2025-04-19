@@ -59,7 +59,7 @@ st.markdown("""
     }
 
     section[data-testid="stFileUploader"] button {
-        background-color: #000000 !important;
+        background-color: #f2f3f5 !important;
         color: #ffffff !important;
         font-weight: 700;
         font-size: 1rem;
