@@ -21,114 +21,118 @@ except KeyError as e:
 st.markdown("""
     <style>
     html, body, [class*="css"] {
-        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
+        font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
         background-color: #FFFFFF;
         color: #111827;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     .stApp {
-        max-width: 80rem; /* max-w-7xl */
-        margin-left: auto;
-        margin-right: auto;
-        padding: 1.5rem;
+        max-width: 80rem;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    h1, .stTitle {
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        color: #111827;
+    }
+
+    .stSubheader {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #1F2937;
     }
 
     .stFileUploader > div > div > div {
-        background-color: #F9FAFB !important; /* bg-gray-50 */
-        border: 1px solid #E5E7EB;
-        border-radius: 1rem; /* rounded-2xl */
-        padding: 1rem;
+        background-color: #F3F4F6;
+        border: 1px dashed #D1D5DB;
+        border-radius: 1rem;
+        padding: 1.25rem;
+        transition: background 0.3s ease;
     }
 
     .stFileUploader > div > button {
-        background-color: #000000 !important;
+        background-color: #475569 !important;
         color: #FFFFFF !important;
-        border-radius: 9999px; /* rounded-full */
+        border-radius: 9999px;
         font-weight: 600;
-        padding: 0.5rem 1rem;
-        transition-property: all;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 150ms;
+        padding: 0.5rem 1.25rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    
+
     .stFileUploader > div > button:hover {
         transform: scale(1.05);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-
-    h1 {
-        font-size: 2.25rem; /* text-4xl */
-        font-weight: 700;
-        line-height: 2.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    h3, .stSubheader {
-        font-size: 1.5rem; /* text-2xl */
-        font-weight: 600;
-        line-height: 2rem;
-        margin-top: 1.5rem;
-        margin-bottom: 1rem;
-    }
-    
-    p, .stInfo, div {
-        font-size: 0.875rem; /* text-sm */
-        line-height: 1.25rem;
+        box-shadow: 0 6px 10px rgba(0,0,0,0.08);
     }
 
     .stAlert, .stSuccess, .stWarning, .stInfo {
-        background-color: #F9FAFB !important; /* bg-gray-50 */
-        color: #111827 !important;
-        border-radius: 1rem; /* rounded-2xl */
+        background-color: #F9FAFB !important;
+        color: #1F2937 !important;
+        border-radius: 1rem;
         padding: 1rem;
         border: 1px solid #E5E7EB;
     }
 
     .stProgress > div > div {
-        background-color: #000000 !important;
-        border-radius: 9999px; /* rounded-full */
+        background-color: #475569 !important;
+        border-radius: 9999px;
     }
-    
+
     .stProgress {
         height: 0.5rem !important;
     }
 
+    p, li, span, label {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #374151;
+    }
+
     ::-webkit-scrollbar {
-        display: none;
+        width: 6px;
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #D1D5DB;
+        border-radius: 3px;
     }
 
     .footer {
-        margin-top: 6rem;
+        margin-top: 4rem;
         text-align: center;
-        font-size: 0.875rem; /* text-sm */
-        color: #6B7280; /* text-gray-500 */
-        padding-bottom: 2rem;
+        font-size: 0.875rem;
+        color: #6B7280;
     }
 
     .footer a {
-        color: #000000;
-        text-decoration: none;
+        color: #475569;
         font-weight: 600;
-        transition-property: color;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 150ms;
+        text-decoration: none;
+        transition: color 0.2s ease;
     }
 
     .footer a:hover {
-        color: #4B5563; /* text-gray-600 */
+        color: #1E293B;
     }
-    
-    /* Header styling */
-    .stTitle {
-        font-size: 1.875rem; /* text-3xl */
-        font-weight: 700;
-        margin-bottom: 1rem;
-        text-align: center;
+
+    .stSpinner {
+        animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
     }
     </style>
 """, unsafe_allow_html=True)
+
 
 # Header
 st.markdown('<div style="text-align:center;font-size:2rem;font-weight:700;margin-bottom:10px">GenIAlab.Space</div>', unsafe_allow_html=True)
