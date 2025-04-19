@@ -20,10 +20,12 @@ except KeyError as e:
 # Inject custom CSS for clean design
 st.markdown("""
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
     html, body, [class*="css"] {
-        font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+        font-family: 'Inter', sans-serif !important;
         background-color: #FFFFFF;
-        color: #000000;
+        color: #374151; /* خاکستری تیره */
     }
 
     .stApp {
@@ -33,46 +35,48 @@ st.markdown("""
     }
 
     .stFileUploader > div > div > div {
-        background-color: #f2f3f5 !important;
-        border: 1px solid #ccc;
+        background-color: #f3f4f6 !important;
+        border: 1px solid #d1d5db;
         border-radius: 12px;
         padding: 14px;
-        color: #000000;
+        color: #374151;
+        font-size: 1rem;
     }
 
     .stFileUploader > div > button {
-        background-color: #000000 !important;
+        background-color: #111827 !important;
         color: #FFFFFF !important;
         border-radius: 8px;
         font-weight: 600;
+        font-size: 1rem;
     }
 
     .stAlert, .stSuccess, .stWarning, .stInfo {
-        background-color: #e3e6e8 !important;
-        color: #000000 !important;
+        background-color: #f9fafb !important;
+        color: #374151 !important;
         border-radius: 8px;
         font-size: 0.95rem;
-    }
-
-    ::-webkit-scrollbar {
-        display: none;
     }
 
     .footer {
         margin-top: 4rem;
         text-align: center;
         font-size: 0.9rem;
-        color: #000;
+        color: #6b7280;
     }
 
     .footer a {
-        color: #000000;
+        color: #111827;
         text-decoration: none;
         font-weight: 600;
     }
 
     .footer a:hover {
-        color: #333333;
+        color: #374151;
+    }
+
+    ::-webkit-scrollbar {
+        display: none;
     }
     </style>
 """, unsafe_allow_html=True)
