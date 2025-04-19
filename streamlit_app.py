@@ -64,7 +64,7 @@ p, li, span, label {
 
 /* File Uploader */
 .stFileUploader > div > div > div {
-    background-color: #FFFFFF;
+    background-color: #f2f2f2;
     border: 2px dashed #CBD5E1;
     border-radius: 12px;
     padding: 2rem;
@@ -79,7 +79,7 @@ p, li, span, label {
 }
 
 .stFileUploader > div > button {
-    background-color: #000000 !important;
+    background-color: #f2f2f2 !important;
     color: #FFFFFF !important;
     border-radius: 8px;
     font-weight: 600;
@@ -103,7 +103,7 @@ p, li, span, label {
 
 /* Alerts and Info Boxes */
 .stAlert, .stSuccess, .stWarning, .stInfo {
-    background-color: #FFFFFF !important;
+    background-color: #f2f2f2 !important;
     color: #1E293B !important;
     border-radius: 12px;
     padding: 1.5rem;
@@ -122,7 +122,7 @@ p, li, span, label {
 }
 
 .stProgress > div > div {
-    background-color: #000000 !important;
+    background-color: #f2f2f2 !important;
     border-radius: 9999px;
     transition: width 0.3s ease;
 }
