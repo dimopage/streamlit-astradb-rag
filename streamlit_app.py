@@ -18,10 +18,14 @@ except KeyError as e:
     st.stop()
 
 # Inject custom CSS with exact Tailwind styling pattern
+st.markdown("""
+    <style>
+    </style>
+""", unsafe_allow_html=True)
 
 
 # Header
-st.markdown('<div style="text-align:center;font-size:2rem;font-weight:700;margin-bottom:10px">GenIAlab.Space</div>', unsafe_allow_html=True)
+st.markdown('<div">GenIAlab.Space</div>', unsafe_allow_html=True)
 st.title("DocVectorizer for RAG")
 
 # Upload section
