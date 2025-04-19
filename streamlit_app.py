@@ -66,6 +66,16 @@ st.markdown("""
         color: #1f2937 !important;
     }
 
+    /* Targeting the inner element of the dropzone more specifically */
+    div[data-testid="stFileUploaderDropzone"] > div {
+        background-color: #f2f3f5 !important;
+    }
+
+    /* Fallback selector for any nested elements */
+    div[data-testid="stFileUploaderDropzone"] * {
+        background-color: #f2f3f5 !important;
+    }
+
     /* File uploader drop area text and icons */
     div[data-testid="stFileUploaderDropzone"] span,
     div[data-testid="stFileUploaderDropzone"] svg {
