@@ -24,12 +24,15 @@ st.markdown("""
 
     html, body, [class*="css"] {
         font-family: 'Inter', sans-serif !important;
+        font-size: 1.25rem;
+        line-height: 1.625;
+        font-weight: 400;
+        color: #4B5563;
         background-color: #FFFFFF;
-        color: #374151; /* خاکستری تیره */
     }
 
     .stApp {
-        max-width: 850px;
+        max-width: 48rem;
         margin: auto;
         padding: 2rem;
     }
@@ -39,8 +42,9 @@ st.markdown("""
         border: 1px solid #d1d5db;
         border-radius: 12px;
         padding: 14px;
-        color: #374151;
-        font-size: 1rem;
+        color: #4B5563;
+        font-size: 1.25rem;
+        line-height: 1.625;
     }
 
     .stFileUploader > div > button {
@@ -48,46 +52,68 @@ st.markdown("""
         color: #FFFFFF !important;
         border-radius: 8px;
         font-weight: 600;
-        font-size: 1rem;
+        font-size: 1.25rem;
+        line-height: 1.625;
     }
 
     .stAlert, .stSuccess, .stWarning, .stInfo {
         background-color: #f9fafb !important;
-        color: #374151 !important;
+        color: #4B5563 !important;
         border-radius: 8px;
-        font-size: 0.95rem;
+        font-size: 1.25rem;
+        line-height: 1.625;
     }
 
     .footer {
         margin-top: 4rem;
         text-align: center;
-        font-size: 0.9rem;
-        color: #6b7280;
+        font-size: 1rem;
+        color: #4B5563;
+        line-height: 1.625;
     }
 
     .footer a {
         color: #111827;
         text-decoration: none;
         font-weight: 600;
+        font-size: 1rem;
     }
 
     .footer a:hover {
-        color: #374151;
+        color: #4B5563;
     }
 
     ::-webkit-scrollbar {
         display: none;
     }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Inter', sans-serif !important;
+        color: #111827;
+        font-weight: 700;
+    }
+
+    .stTitle {
+        font-size: 2.5rem;
+        line-height: 1.2;
+        color: #111827;
+    }
+
+    .stSubheader {
+        font-size: 1.5rem;
+        line-height: 1.5;
+        color: #111827;
+    }
     </style>
 """, unsafe_allow_html=True)
 
 # Header
-st.markdown('<div style="text-align:center;font-size:2rem;font-weight:700;margin-bottom:10px">GenIAlab.Space</div>', unsafe_allow_html=True)
+st.markdown('<div style="text-align:center;font-size:2.5rem;font-weight:700;color:#111827;margin-bottom:10px">GenIAlab.Space</div>', unsafe_allow_html=True)
 st.title("DocVectorizer for RAG")
 
 # Upload section
 st.subheader("Upload Documents")
-uploaded_files = st.file_uploader("", type=["pdf", "txt", "md", "json"], accept_multiple_files=True)
+uploaded_files = st.file_uploader("Choose files to upload", type=["pdf", "txt", "md", "json"], accept_multiple_files=True)
 
 # Define vectorstore collection
 use_case = "default"
@@ -123,7 +149,7 @@ if uploaded_files:
                 skipped_files.append(file.name)
                 continue
 
-            # Select proper loader
+            # Select proper loader based on file type
             if file.type == "application/pdf":
                 loader = PyPDFLoader(tmp_file_path)
             elif file.type in ["text/plain", "text/markdown"]:
@@ -163,7 +189,7 @@ if uploaded_files:
             st.error(f"Failed to store documents: {str(e)}")
 
     if skipped_files:
-        st.warning(f"{', '.join(skipped_files)} was already vectorized. Skipping.")
+        st.warning(f"Files {', '.join(skipped_files)} were already vectorized. Skipping.")
     elif not documents:
         st.info("No documents were processed.")
 else:
