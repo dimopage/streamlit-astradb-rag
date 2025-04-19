@@ -49,30 +49,41 @@ st.markdown("""
         margin-bottom: 40px;
     }
 
-    /* File uploader */
-    .stFileUploader > div > div > div {
-        border: 1px solid #E5E5E5;
-        border-radius: 8px;
-        padding: 12px;
-        background-color: #f2f3f5;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        color: #1f2937;
+    /* File uploader container */
+    div[data-testid="stFileUploader"] {
+        background-color: #f2f3f5 !important;
+        border: 1px solid #E5E5E5 !important;
+        border-radius: 8px !important;
+        padding: 12px !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+    }
+
+    /* File uploader drop area */
+    div[data-testid="stFileUploaderDropzone"] {
+        background-color: #f2f3f5 !important;
+        color: #1f2937 !important;
+    }
+
+    /* File uploader drop area text and icons */
+    div[data-testid="stFileUploaderDropzone"] span,
+    div[data-testid="stFileUploaderDropzone"] svg {
+        color: #1f2937 !important;
     }
 
     /* Upload button */
-    .stFileUploader > div > button {
-        background-color: #1f2937;
-        color: #FFFFFF;
-        border-radius: 8px;
-        padding: 10px 20px;
-        font-size: 1rem;
-        font-weight: 700;
-        border: none;
-        transition: background-color 0.3s;
+    div[data-testid="stFileUploader"] button {
+        background-color: #1f2937 !important;
+        color: #FFFFFF !important;
+        border-radius: 8px !important;
+        padding: 10px 20px !important;
+        font-size: 1rem !important;
+        font-weight: 700 !important;
+        border: none !important;
+        transition: background-color 0.3s !important;
     }
 
-    .stFileUploader > div > button:hover {
-        background-color: #374151;
+    div[data-testid="stFileUploader"] button:hover {
+        background-color: #374151 !important;
     }
 
     /* Feedback messages */
@@ -130,11 +141,11 @@ st.markdown("""
             font-size: 1.5rem;
             margin: 20px 0;
         }
-        .stFileUploader > div > div > div {
+        div[data-testid="stFileUploaderDropzone"] {
             font-size: 0.9rem;
             padding: 10px;
         }
-        .stFileUploader > div > button {
+        div[data-testid="stFileUploader"] button {
             font-size: 0.9rem;
             padding: 8px 16px;
         }
