@@ -20,133 +20,101 @@ except KeyError as e:
 # Custom CSS for GenIAlab.Space-inspired modern UI with forced font
 st.markdown("""
     <style>
-    * {
-        font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+    :root {
+        --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --font-size-base: 16px;
+        --font-size-sm: 14px;
+        --font-size-lg: 18px;
+        --font-size-xl: 24px;
+        --text-color: #1F1F1F;
+        --bg-color: #FFFFFF;
+        --primary-color: #000000;
+        --border-color: #E0E0E0;
+        --radius: 10px;
+    }
+
+    html, body, [class*="css"] {
+        font-family: var(--font-sans);
+        font-size: var(--font-size-base);
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        line-height: 1.6;
     }
 
     .stApp {
-        background-color: #FFFFFF;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
+        max-width: 860px;
+        margin: auto;
+        padding: 2.5rem 1rem;
     }
 
-    /* Logo text */
-    .logo-text {
-        text-align: center;
-        font-size: 2rem;
+    h1, h2, h3 {
         font-weight: 700;
-        color: #000000;
-        margin: 30px 0 20px 0;
+        margin-bottom: 0.5em;
     }
 
-    /* Title */
-    h1 {
-        text-align: center;
-        font-size: 3.5rem;
-        font-weight: 700;
-        color: #000000;
-        margin-bottom: 40px;
+    .stTitle {
+        font-size: var(--font-size-xl);
     }
 
-    /* File uploader */
+    .stSubheader {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        color: var(--text-color);
+    }
+
     .stFileUploader > div > div > div {
-        border: 1px solid #E5E5E5;
-        border-radius: 8px;
-        padding: 12px;
-        background-color: #f2f3f5;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        color: #1f2937;
+        background-color: #F9FAFB;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 16px;
+        color: var(--text-color);
     }
 
-    /* Upload button */
     .stFileUploader > div > button {
-        background-color: #1f2937;
-        color: #FFFFFF;
+        background-color: var(--primary-color) !important;
+        color: #FFFFFF !important;
         border-radius: 8px;
-        padding: 10px 20px;
-        font-size: 1rem;
-        font-weight: 700;
-        border: none;
-        transition: background-color 0.3s;
+        padding: 10px 16px;
+        font-weight: 600;
+        font-size: var(--font-size-sm);
     }
 
-    .stFileUploader > div > button:hover {
-        background-color: #374151;
+    .stAlert, .stSuccess, .stWarning, .stInfo {
+        background-color: #F1F5F9 !important;
+        color: var(--text-color) !important;
+        border-radius: var(--radius);
+        font-size: var(--font-size-sm);
+        padding: 12px;
     }
 
-    /* Feedback messages */
-    .stSuccess, .stWarning, .stInfo {
-        background-color: #F5F5F5;
-        color: #000000;
-        border-radius: 8px;
-        padding: 15px;
-        font-size: 1rem;
-        animation: fadeIn 0.5s;
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
     }
 
-    /* Progress bar container */
-    .progress-container {
-        margin: 20px 0;
-        padding: 15px;
-        background-color: #f2f3f5;
-        border-radius: 8px;
-        color: #1f2937;
+    ::-webkit-scrollbar-thumb {
+        background-color: #CBD5E1;
+        border-radius: 6px;
     }
 
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    /* Footer */
     .footer {
+        margin-top: 4rem;
         text-align: center;
-        margin-top: 50px;
-        font-size: 0.9rem;
-        font-weight: 400;
-        color: #000000;
+        font-size: var(--font-size-sm);
+        color: #6B7280;
     }
 
     .footer a {
-        color: #000000;
+        color: var(--text-color);
         text-decoration: none;
-        font-weight: 700;
+        font-weight: 600;
     }
 
     .footer a:hover {
-        color: #333333;
-    }
-
-    /* Responsive design */
-    @media (max-width: 768px) {
-        .stApp {
-            padding: 10px;
-        }
-        h1 {
-            font-size: 2.5rem;
-        }
-        .logo-text {
-            font-size: 1.5rem;
-            margin: 20px 0;
-        }
-        .stFileUploader > div > div > div {
-            font-size: 0.9rem;
-            padding: 10px;
-        }
-        .stFileUploader > div > button {
-            font-size: 0.9rem;
-            padding: 8px 16px;
-        }
-        .stSuccess, .stWarning, .stInfo {
-            font-size: 0.9rem;
-        }
-        .progress-container {
-            font-size: 0.9rem;
-        }
+        color: #333;
     }
     </style>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # Logo text
 st.markdown('<div class="logo-text">GenIAlab.Space</div>', unsafe_allow_html=True)
