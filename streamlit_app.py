@@ -20,135 +20,174 @@ except KeyError as e:
 # Inject custom CSS with exact Tailwind styling pattern
 st.markdown("""
     <style>
+    /* Base Styles */
     html, body, [class*="css"] {
-        font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
-        color: #000000 !important;
+        font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
         background-color: #FFFFFF;
-        position: relative;
-        overflow-x: hidden;
+        color: #111827;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
-
+    
+    /* Layout */
     .stApp {
-        max-width: 800px;
+        max-width: 76rem;
         margin: 0 auto;
-        padding: 20px;
-        position: relative;
-        z-index: 1;
+        padding: 2.5rem 2rem;
     }
-
-    .stFileUploader > div > div > div {
-        background-color: #f2f3f5 !important;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        padding: 12px;
-        color: #000000;
-    }
-
-    .stFileUploader > div > button {
-        background-color: #000000 !important;
-        color: #FFFFFF !important;
-        border-radius: 8px;
+    
+    /* Typography */
+    h1, .stTitle {
+        font-size: 2.5rem;
         font-weight: 700;
-    }
-
-    .stAlert, .stSuccess, .stWarning, .stInfo {
-        background-color: #E3E6E8 !important;
-        color: #000000 !important;
-        border-radius: 10px;
-        font-size: 1rem;
-    }
-
-    .footer {
+        margin-bottom: 2rem;
         text-align: center;
-        margin-top: 50px;
-        font-size: 0.9rem;
-        font-weight: 400;
-        color: #000000;
+        color: #111827;
+        letter-spacing: -0.025em;
     }
-
-    .footer a {
-        color: #000000;
-        text-decoration: none;
-        font-weight: 700;
+    
+    .stSubheader {
+        font-size: 1.375rem;
+        font-weight: 600;
+        margin: 1.5rem 0 1rem;
+        color: #1F2937;
     }
-
-    .footer a:hover {
-        color: #333333;
+    
+    p, li, span, label {
+        font-size: 1rem;
+        line-height: 1.7;
+        color: #374151;
     }
-
+    
+    /* File Uploader */
+    .stFileUploader > div > div > div {
+        background-color: #F9FAFB;
+        border: 2px dashed #D1D5DB;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        transition: all 0.25s ease;
+    }
+    
+    .stFileUploader > div > div > div:hover {
+        background-color: #F3F4F6;
+        border-color: #9CA3AF;
+    }
+    
+    .stFileUploader > div > button {
+        background-color: #4B5563 !important;
+        color: #FFFFFF !important;
+        border-radius: 9999px;
+        font-weight: 600;
+        padding: 0.625rem 1.5rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .stFileUploader > div > button:hover {
+        background-color: #374151 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .stFileUploader > div > button:active {
+        transform: translateY(0);
+    }
+    
+    /* Alerts and Info Boxes */
+    .stAlert, .stSuccess, .stWarning, .stInfo {
+        background-color: #F9FAFB !important;
+        color: #1F2937 !important;
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+        border: 1px solid #E5E7EB;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin: 1.5rem 0;
+    }
+    
+    /* Progress Bar */
+    .stProgress {
+        height: 0.5rem !important;
+        margin: 1rem 0;
+    }
+    
+    .stProgress > div > div {
+        background-color: #4B5563 !important;
+        border-radius: 9999px;
+    }
+    
+    /* Scrollbar */
     ::-webkit-scrollbar {
-        display: none;
+        width: 8px;
+        height: 8px;
+        background: transparent;
     }
-
-    /* 🎨 Gradient + Blur Background Light Effects */
-    .ray-container {
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        user-select: none;
-        z-index: 0;
+    
+    ::-webkit-scrollbar-track {
+        background: #F3F4F6;
+        border-radius: 4px;
     }
-
-    .ray {
-        position: absolute;
-        border-radius: 100%;
-        background: radial-gradient(rgba(83, 196, 255, 0.5) 0%, rgba(43, 166, 255, 0) 100%);
-        mix-blend-mode: overlay;
-        opacity: 0.6;
+    
+    ::-webkit-scrollbar-thumb {
+        background-color: #D1D5DB;
+        border-radius: 4px;
+        border: 2px solid #F3F4F6;
     }
-
-    .ray1 {
-        width: 480px;
-        height: 680px;
-        top: -540px;
-        left: 250px;
-        transform: rotate(80deg);
-        filter: blur(110px);
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: #9CA3AF;
     }
-
-    .ray2 {
-        width: 110px;
-        height: 400px;
-        top: -280px;
-        left: 350px;
-        transform: rotate(-20deg);
-        filter: blur(60px);
+    
+    /* Footer */
+    .footer {
+        margin-top: 5rem;
+        padding-top: 2rem;
+        text-align: center;
+        font-size: 0.875rem;
+        color: #6B7280;
+        border-top: 1px solid #F3F4F6;
     }
-
-    .ray3 {
-        width: 400px;
-        height: 370px;
-        top: -350px;
-        left: 200px;
-        filter: blur(21px);
+    
+    .footer a {
+        color: #4B5563;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.2s ease;
     }
-
-    .ray4 {
-        width: 330px;
-        height: 370px;
-        top: -330px;
-        left: 50px;
-        filter: blur(21px);
+    
+    .footer a:hover {
+        color: #1F2937;
+        text-decoration: underline;
     }
-
-    .ray5 {
-        width: 110px;
-        height: 400px;
-        top: -280px;
-        left: -10px;
-        transform: rotate(-40deg);
-        filter: blur(60px);
+    
+    /* Spinner Animation */
+    .stSpinner {
+        animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+    
+    /* Select Boxes and Inputs */
+    .stSelectbox > div > div, .stTextInput > div > div {
+        background-color: #F9FAFB;
+        border-radius: 0.5rem;
+        border: 1px solid #E5E7EB;
+        transition: all 0.2s ease;
+    }
+    
+    .stSelectbox > div > div:hover, .stTextInput > div > div:hover {
+        border-color: #D1D5DB;
+    }
+    
+    .stSelectbox > div > div:focus-within, .stTextInput > div > div:focus-within {
+        border-color: #6B7280;
+        box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1);
     }
     </style>
-
-    <div class="ray-container">
-        <div class="ray ray1"></div>
-        <div class="ray ray2"></div>
-        <div class="ray ray3"></div>
-        <div class="ray ray4"></div>
-        <div class="ray ray5"></div>
-    </div>
 """, unsafe_allow_html=True)
+
 
 # Header
 st.markdown('<div style="text-align:center;font-size:2rem;font-weight:700;margin-bottom:10px">GenIAlab.Space</div>', unsafe_allow_html=True)
