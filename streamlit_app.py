@@ -70,7 +70,7 @@ st.markdown("""
     }
 
     section[data-testid="stFileUploader"] button:hover {
-        background-color: #ffffff !important;
+        background-color: #f2f3f5 !important;
         color: #000000 !important;
         border: 1px solid #000000 !important;
     }
