@@ -8,137 +8,150 @@ import tempfile
 import os
 from datetime import datetime
 
-# Load secrets
+# Custom CSS that matches the design system
+st.markdown("""
+    <style>
+        /* Base Styles */
+        :root {
+            --primary: #000000;
+            --secondary: #6B7280;
+            --background: #FFFFFF;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-600: #4B5563;
+            --gray-900: #111827;
+        }
+
+        /* Typography */
+        .stApp, .stMarkdown, [data-testid="stMarkdownContainer"] {
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            color: var(--gray-900);
+        }
+
+        /* Layout */
+        .stApp {
+            max-width: 80rem;
+            margin: 0 auto;
+            padding: 6rem 1.5rem;
+            background: var(--background);
+        }
+
+        /* Headers */
+        h1 {
+            font-size: 3rem !important;
+            font-weight: 700 !important;
+            letter-spacing: -0.025em;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .stSubheader {
+            font-size: 1.5rem !important;
+            font-weight: 600 !important;
+            margin: 2rem 0 1rem;
+            color: var(--gray-900);
+        }
+
+        /* File Uploader */
+        .stFileUploader {
+            margin: 2rem 0;
+        }
+
+        .stFileUploader > div {
+            background: var(--gray-50);
+            border: 2px dashed var(--gray-200);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .stFileUploader [data-testid="stFileUploadDropzone"] {
+            background: transparent !important;
+            border: none !important;
+        }
+
+        /* Buttons */
+        .stButton > button {
+            background: var(--primary) !important;
+            color: var(--background) !important;
+            border-radius: 9999px !important;
+            padding: 0.75rem 1.5rem !important;
+            font-weight: 600 !important;
+            transition: all 0.2s;
+        }
+
+        .stButton > button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Progress Bar */
+        .stProgress > div > div {
+            background: var(--primary) !important;
+            border-radius: 9999px;
+        }
+
+        /* Messages */
+        .stAlert, .stInfo, .stSuccess, .stWarning {
+            background: var(--gray-50) !important;
+            border: 1px solid var(--gray-200);
+            border-radius: 1rem;
+            padding: 1rem !important;
+            color: var(--gray-900) !important;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 6rem;
+            text-align: center;
+            color: var(--secondary);
+            font-size: 0.875rem;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover {
+            color: var(--gray-600);
+        }
+
+        /* Hide Streamlit Branding */
+        #MainMenu, footer, header {
+            display: none !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# Load environment variables
 try:
     ASTRA_DB_API_ENDPOINT = st.secrets["ASTRA_DB_API_ENDPOINT"]
     ASTRA_DB_APPLICATION_TOKEN = st.secrets["ASTRA_DB_APPLICATION_TOKEN"]
     ASTRA_DB_NAMESPACE = st.secrets.get("ASTRA_DB_NAMESPACE", None)
 except KeyError as e:
-    st.error(f"Missing secret key: {e}")
+    st.error(f"Missing required configuration: {e}")
     st.stop()
 
-# Inject custom CSS with exact Tailwind styling pattern
-st.markdown("""
-    <style>
-    html, body, [class*="css"] {
-        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        background-color: #FFFFFF;
-        color: #111827;
-    }
+# Page Header
+st.markdown('<div style="text-align:center;font-size:1.25rem;font-weight:600;color:#6B7280;margin-bottom:0.5rem">GenIALab.Space</div>', unsafe_allow_html=True)
+st.title("Document Vectorizer")
+st.markdown('<p style="text-align:center;color:#6B7280;margin-bottom:3rem">Transform your documents into vector embeddings for RAG applications</p>', unsafe_allow_html=True)
 
-    .stApp {
-        max-width: 80rem; /* max-w-7xl */
-        margin-left: auto;
-        margin-right: auto;
-        padding: 1.5rem;
-    }
-
-    .stFileUploader > div > div > div {
-        background-color: #F9FAFB !important; /* bg-gray-50 */
-        border: 1px solid #E5E7EB;
-        border-radius: 1rem; /* rounded-2xl */
-        padding: 1rem;
-    }
-
-    .stFileUploader > div > button {
-        background-color: #000000 !important;
-        color: #FFFFFF !important;
-        border-radius: 9999px; /* rounded-full */
-        font-weight: 600;
-        padding: 0.5rem 1rem;
-        transition-property: all;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 150ms;
-    }
-    
-    .stFileUploader > div > button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-
-    h1 {
-        font-size: 2.25rem; /* text-4xl */
-        font-weight: 700;
-        line-height: 2.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    h3, .stSubheader {
-        font-size: 1.5rem; /* text-2xl */
-        font-weight: 600;
-        line-height: 2rem;
-        margin-top: 1.5rem;
-        margin-bottom: 1rem;
-    }
-    
-    p, .stInfo, div {
-        font-size: 0.875rem; /* text-sm */
-        line-height: 1.25rem;
-    }
-
-    .stAlert, .stSuccess, .stWarning, .stInfo {
-        background-color: #F9FAFB !important; /* bg-gray-50 */
-        color: #111827 !important;
-        border-radius: 1rem; /* rounded-2xl */
-        padding: 1rem;
-        border: 1px solid #E5E7EB;
-    }
-
-    .stProgress > div > div {
-        background-color: #000000 !important;
-        border-radius: 9999px; /* rounded-full */
-    }
-    
-    .stProgress {
-        height: 0.5rem !important;
-    }
-
-    ::-webkit-scrollbar {
-        display: none;
-    }
-
-    .footer {
-        margin-top: 6rem;
-        text-align: center;
-        font-size: 0.875rem; /* text-sm */
-        color: #6B7280; /* text-gray-500 */
-        padding-bottom: 2rem;
-    }
-
-    .footer a {
-        color: #000000;
-        text-decoration: none;
-        font-weight: 600;
-        transition-property: color;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 150ms;
-    }
-
-    .footer a:hover {
-        color: #4B5563; /* text-gray-600 */
-    }
-    
-    /* Header styling */
-    .stTitle {
-        font-size: 1.875rem; /* text-3xl */
-        font-weight: 700;
-        margin-bottom: 1rem;
-        text-align: center;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# Header
-st.markdown('<div style="text-align:center;font-size:2rem;font-weight:700;margin-bottom:10px">GenIAlab.Space</div>', unsafe_allow_html=True)
-st.title("DocVectorizer for RAG")
-
-# Upload section
+# Document Upload Section
 st.subheader("Upload Documents")
-uploaded_files = st.file_uploader("", type=["pdf", "txt", "md", "json"], accept_multiple_files=True)
+uploaded_files = st.file_uploader(
+    "Supported formats: PDF, TXT, MD, JSON",
+    type=["pdf", "txt", "md", "json"],
+    accept_multiple_files=True
+)
 
-# Define vectorstore collection
+# Processing Logic
 use_case = "default"
 collection_name = f"rag_{use_case.lower().replace(' ', '_')}"
 
@@ -147,9 +160,9 @@ if uploaded_files:
     skipped_files = []
     total_files = len(uploaded_files)
 
-    progress = st.progress(0, text="Processing files...")
+    progress = st.progress(0, text="Processing documents...")
 
-    for idx, file in enumerate(uploaded_files):
+    for idx, file in enumerate(uploaded_files, 1):
         file_hash = hashlib.sha256(file.getvalue()).hexdigest()
 
         try:
@@ -166,25 +179,26 @@ if uploaded_files:
                 namespace=ASTRA_DB_NAMESPACE
             )
 
-            # Check for duplicates based on file hash
+            # Check for duplicates
             existing = vectorstore.similarity_search(file_hash, k=1)
             if existing:
                 skipped_files.append(file.name)
                 continue
 
-            # Select proper loader
-            if file.type == "application/pdf":
-                loader = PyPDFLoader(tmp_file_path)
-            elif file.type in ["text/plain", "text/markdown"]:
-                loader = TextLoader(tmp_file_path)
-            elif file.type == "application/json":
-                loader = UnstructuredFileLoader(tmp_file_path)
-            else:
+            # Load document based on type
+            loader = {
+                "application/pdf": PyPDFLoader,
+                "text/plain": TextLoader,
+                "text/markdown": TextLoader,
+                "application/json": UnstructuredFileLoader
+            }.get(file.type)
+
+            if not loader:
                 st.warning(f"Unsupported file type: {file.type}")
                 continue
 
-            # Load and prepare document
-            docs = loader.load()
+            # Process document
+            docs = loader(tmp_file_path).load()
             for doc in docs:
                 doc.metadata.update({
                     "filename": file.name,
@@ -199,24 +213,31 @@ if uploaded_files:
         finally:
             os.unlink(tmp_file_path)
 
-        progress.progress((idx + 1) / total_files, text=f"Processed {idx + 1} of {total_files} files")
+        progress.progress(idx / total_files, text=f"Processed {idx} of {total_files} files")
 
     if documents:
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=2500, chunk_overlap=250)
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=2500,
+            chunk_overlap=250
+        )
         chunks = text_splitter.split_documents(documents)
 
         try:
             vectorstore.add_documents(chunks)
-            st.success(f"Vectorized and stored {len(chunks)} chunks in collection '{collection_name}'")
+            st.success(f"Successfully vectorized {len(chunks)} chunks from {len(documents)} documents")
         except Exception as e:
-            st.error(f"Failed to store documents: {str(e)}")
+            st.error(f"Failed to store vectors: {str(e)}")
 
     if skipped_files:
-        st.warning(f"{', '.join(skipped_files)} was already vectorized. Skipping.")
+        st.warning(f"Skipped previously processed files: {', '.join(skipped_files)}")
     elif not documents:
-        st.info("No documents were processed.")
+        st.info("No new documents to process")
 else:
-    st.info("Please upload documents to proceed.")
+    st.info("Upload your documents to begin processing")
 
 # Footer
-st.markdown('<div class="footer">Powered by <a href="https://genialab.space/" target="_blank">GenIAlab.Space</a></div>', unsafe_allow_html=True)
+st.markdown("""
+    <div class="footer">
+        Powered by <a href="https://genialab.space" target="_blank">GenIALab.Space</a>
+    </div>
+""", unsafe_allow_html=True)
